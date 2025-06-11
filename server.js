@@ -1,22 +1,32 @@
-import http from 'http';
-import fs from 'fs/promises';
+const fs = require('fs/promises');
+const express = require('express');
+const app = express();
 
-http
-  .createServer(async (req, res) => {
-    try {
-      if (req.url === '/') {
-        const file = await fs.readFile(`./index.html`);
-        res.writeHead(200, { 'content-type': 'text/html' });
-        res.end(file);
-      } else {
-        const file = await fs.readFile(`./${req.url}.html`);
-        res.writeHead(200, { 'content-type': 'text/html' });
-        res.end(file);
-      }
-    } catch (err) {
-      const file = await fs.readFile('./404.html');
-      res.writeHead(404, { 'content-type': 'text/html' });
-      res.end(file);
-    }
-  })
-  .listen(8080);
+app.get('/', async (req, res) => {
+  const file = await fs.readFile('./index.html');
+  res.set('content-type', 'text/html');
+  res.send(file);
+});
+
+app.get('/about', async (req, res) => {
+  const file = await fs.readFile('./about.html');
+  res.set('content-type', 'text/html');
+  res.send(file);
+});
+
+app.get('/contact-me', async (req, res) => {
+  const file = await fs.readFile('./contact-me.html');
+  res.set('content-type', 'text/html');
+  res.send(file);
+});
+
+app.use(async (req, res) => {
+  const file = await fs.readFile('./404.html');
+  res.set('content-type', 'text/html');
+  res.send(file);
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log('sever is running on port: ' + PORT);
+});
